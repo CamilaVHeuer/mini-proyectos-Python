@@ -68,7 +68,7 @@ def intentar_eliminar_fruta():
             return False #salgo de la función sin eliminar nada
     else:
         print("No hay frutas en la lista.\n")
-        return True #volver al menú principal, si no escribo este return, me queda en un loop infinito porque en el menú principal sigue intentando eliminar fruta
+        return True #volver al menú principal 
 
 def mostrar_menu():
     while True:
