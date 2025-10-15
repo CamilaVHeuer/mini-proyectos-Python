@@ -245,10 +245,10 @@ class TestIntentarEliminarFruta(TestMenuFrutas):
     
     @patch('builtins.print')
     def test_eliminar_fruta_lista_vacia(self, mock_print):
-        """Test: intentar eliminar cuando la lista está vacía"""
+        """Test: intentar eliminar cuando la lista está vacía y volver al menú"""
         resultado = menu_frutas.intentar_eliminar_fruta()
         
-        self.assertIsNone(resultado)  # La función no retorna nada cuando la lista está vacía
+        self.assertTrue(resultado)  # Ahora retorna True para volver al menú principal
         self.assertEqual(len(menu_frutas.frutas), 0)
         mock_print.assert_called_with("No hay frutas en la lista.\n")
     
