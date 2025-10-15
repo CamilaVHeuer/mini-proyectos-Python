@@ -1,0 +1,43 @@
+name: CI - Tests de menú de frutas
+
+# 👇 Se ejecuta solo si hay cambios en la carpeta "menu-interactivo-frutas/"
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "menu-interactivo-frutas/**"
+
+jobs:
+  test:
+    name: Ejecutar tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache de dependencias pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('menu-interactivo-frutas/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Instalar dependencias
+        working-directory: menu-interactivo-frutas
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Ejecutar tests (unittest)
+        working-directory: menu-interactivo-frutas
+        run: python -m unittest discover -v
