@@ -69,7 +69,7 @@ def mostrar_frutas():
 def intentar_eliminar_fruta():
     if not frutas:
         print("No hay frutas en la lista.\n")
-        return 'no_encontrado' #volver al menú principal para evitar loop infinito
+        return ('no_encontrado', None) #volver al menú principal para evitar loop infinito
     if frutas:
         entrada = input('Ingrese la fruta que desea eliminar (o "cancelar" para volver al menú): ').strip().title()
         resultado = validar_entrada(entrada)
@@ -124,20 +124,4 @@ def mostrar_menu():
             case "4":
                 print("Saliendo del programa...\n")
                 break
-        """if opcion == "1":
-            fruta_agregada = False
-            while not fruta_agregada:
-                fruta_agregada = intentar_agregar_fruta()
-        elif opcion == "2":
-            mostrar_frutas()
-        elif opcion == "3":
-            fruta_eliminada = False
-            while not fruta_eliminada:
-                # intentar_eliminar_fruta retorna True si se eliminó o se canceló (para volver al menú)
-                fruta_eliminada = intentar_eliminar_fruta()
-        elif opcion == "4":
-            print("Saliendo del programa...\n")
-            break
-        else:
-            print("Opción no válida. Por favor, seleccione una opción del menú.\n")""" 
-
+      
