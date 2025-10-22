@@ -1,11 +1,5 @@
 import unittest
 from unittest.mock import patch
-import sys
-import os
-import re
-
-# Agregar el directorio actual al path para importar menu_frutas
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Patch para evitar que se ejecute el menú automáticamente al importar
 with patch('builtins.input') as mock_input:
@@ -313,9 +307,10 @@ class TestIntentarEliminarFruta(TestMenuFrutas):
     @patch('builtins.print')
     def test_eliminar_fruta_lista_vacia(self, mock_print):
         """Test: intentar eliminar cuando la lista está vacía"""
-        estado = menu_frutas.intentar_eliminar_fruta()
+        estado, fruta = menu_frutas.intentar_eliminar_fruta()
         
         self.assertEqual(estado, 'no_encontrado')
+        self.assertIsNone(fruta)
         self.assertEqual(len(menu_frutas.frutas), 0)
         mock_print.assert_called_with("No hay frutas en la lista.\n")
     
