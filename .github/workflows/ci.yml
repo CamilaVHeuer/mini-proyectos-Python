@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Run tests
+      - name: Run unit tests
         working-directory: menu-interactivo-frutas
-        run: python -m unittest tests_menu_frutas.py -v
+        run: python -m unittest tests.test_menu_frutas -v
+
+      - name: Run integration tests
+        working-directory: menu-interactivo-frutas
+        run: python -m unittest tests.test_integracion_menu -v
