@@ -1,5 +1,10 @@
 import unittest
 from unittest.mock import patch, call
+import sys
+import os
+
+# Agregar el directorio padre al path para importar menu_frutas
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Patch para evitar que se ejecute el menú automáticamente al importar
 with patch('builtins.input') as mock_input:
