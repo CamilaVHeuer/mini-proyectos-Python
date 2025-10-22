@@ -12,27 +12,50 @@ import re
 
 frutas = []  # Lista para almacenar las frutas
 
+# --- Funciones auxiliares ---
+def validar_entrada(texto: str, permitir_cancelar=True):
+    """
+    Valida la entrada del usuario.
+    - Elimina espacios iniciales/finales y capitaliza la palabra.
+    - Retorna:
+        'cancelado' si el usuario ingresa cancelar/volver/salir.
+        'vacio' si la entrada está vacía.
+        'invalido' si contiene caracteres no permitidos.
+        texto limpio si es válido.
+    """
+    texto = texto.strip().title()
+    #valido si el usuario quiere cancelar
+    if permitir_cancelar and texto.lower() in ['cancelar', 'volver', 'salir']:
+        return "cancelado"
+    #valido si la entrada está vacía
+    if texto == "":
+        return "vacio"
+    #valido si la entrada contiene caracteres no permitidos
+    if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúÑñ ]+", texto):
+        return "invalido"
+    #si todo está bien, retorno el texto limpio
+    return texto
+
 def intentar_agregar_fruta():
-    fruta = input('Ingrese la fruta que desea agregar (o "cancelar" para volver al menú): ').strip().title()
-    #validar que no se ingrese una cadena vacía
-    if fruta == "":
-        print("No se ingresó ninguna fruta, por favor intente nuevamente.\n")
-        return False #salgo de la función sin agregar nada
-    #validar si el usuario quiere cancelar
-    if fruta.lower() in ['cancelar', 'volver', 'salir']:
+    entrada = input('Ingrese la fruta que desea agregar (o "cancelar" para volver al menú): ').strip().title()
+    resultado = validar_entrada(entrada)
+    if resultado == "cancelado":
         print("Operación cancelada. Volviendo al menú principal.\n")
-        return True #volver al menú principal
-    #validar que solo contenga letras (incluye acentos y ñ) y espacios
-    if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúÑñ ]+", fruta):
+        return ('cancelado', None)  #volver al menú principal
+    if resultado == "vacio":
+        print("No se ingresó ninguna fruta, por favor intente nuevamente.\n")
+        return ('vacio', None)  # Salgo de la función sin agregar nada
+    if resultado == "invalido":
         print("La fruta debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
-        return False #salgo de la función sin agregar nada
-    #validar que no se ingrese una fruta que ya esté en la lista
-    if fruta in frutas:
+        return ('invalido', None)  # Salgo de la función sin agregar nada
+    if resultado in frutas:
         print("La fruta ya está en la lista.\n")
-        return False #salgo de la función sin agregar nada
-    frutas.append(fruta)
-    print(f"Fruta {fruta} agregada con éxito.\n")
-    return True #indico que se agregó la fruta con éxito
+        return ('duplicado', resultado)  # Salgo de la función sin agregar nada
+    # Si la entrada es válida, la agrego a la lista
+    frutas.append(resultado)
+    print(f"Fruta {resultado} agregada con éxito.\n")
+    return ('ok', resultado)  # Indico que se agregó la fruta con éxito
+
 
 def mostrar_frutas():
     if frutas: # Verifico si la lista no está vacía
@@ -44,31 +67,30 @@ def mostrar_frutas():
         print("No hay frutas en la lista.\n")
 
 def intentar_eliminar_fruta():
-    if frutas:
-        fruta_a_eliminar = input('Ingrese la fruta que desea eliminar (o "cancelar" para volver al menú): ').strip().title()
-        #validar que no se ingrese una cadena vacía
-        if fruta_a_eliminar == "":
-            print("No se ingresó ninguna fruta, por favor intente nuevamente.\n")
-            return False #salgo de la función sin eliminar nada
-        #validar si el usuario quiere cancelar
-        if fruta_a_eliminar.lower() in ['cancelar', 'volver', 'salir']:
-            print("Operación cancelada. Volviendo al menú principal.\n")
-            return True #volver al menú principal
-        if fruta_a_eliminar in frutas:
-            confirmacion = input('Está seguro que desea eliminar la fruta? (s/n): ').strip().lower()
-            if confirmacion == 's':
-                frutas.remove(fruta_a_eliminar)
-                print(f"Fruta {fruta_a_eliminar} eliminada con éxito.\n")
-                return True #indico que se eliminó la fruta con éxito
-            else:
-                print("Operación cancelada.\n")
-                return True #operación cancelada, volver al menú principal
-        else:
-            print("La fruta que desea eliminar no está en la lista.\n")
-            return False #salgo de la función sin eliminar nada
-    else:
+    if not frutas:
         print("No hay frutas en la lista.\n")
-        return True #volver al menú principal para evitar loop infinito
+        return 'no_encontrado' #volver al menú principal para evitar loop infinito
+    if frutas:
+        entrada = input('Ingrese la fruta que desea eliminar (o "cancelar" para volver al menú): ').strip().title()
+        resultado = validar_entrada(entrada)
+        if resultado == "cancelado":
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)  #volver al menú principal
+        if resultado == "vacio":
+            print("No se ingresó ninguna fruta, por favor intente nuevamente.\n")
+            return ('vacio', None)  # Salgo de la función sin eliminar nada
+        if resultado not in frutas:
+            print("La fruta no se encuentra en la lista.\n")
+            return ('no_encontrado', None)  # Salgo de la función sin eliminar nada
+
+        confirmacion = input('Está seguro que desea eliminar la fruta? (s/n): ').strip().lower()
+        if confirmacion == 's':
+            frutas.remove(resultado)
+            print(f"Fruta {resultado} eliminada con éxito.\n")
+            return ('ok', resultado)  # Indico que se eliminó la fruta con éxito
+        else:
+            print("Operación cancelada.\n")
+            return ('cancelado', None)  # Operación cancelada, volver al menú principal
 
 def mostrar_menu():
     while True:
@@ -85,7 +107,24 @@ def mostrar_menu():
             print("Opción inválida. Por favor, ingrese un número entre 1 y 4.\n")
             continue  # Volver al inicio del bucle si la opción es inválida
 
-        if opcion == "1":
+        match opcion:
+            case "1":
+                while True:
+                    estado, _ = intentar_agregar_fruta()
+                    if estado in ["ok", "cancelado"]:
+                        break
+                
+            case "2":
+                mostrar_frutas()
+            case "3":
+                while True:
+                    estado, _ = intentar_eliminar_fruta()
+                    if estado in ["ok", "cancelado", "no_encontrado"]:
+                        break
+            case "4":
+                print("Saliendo del programa...\n")
+                break
+        """if opcion == "1":
             fruta_agregada = False
             while not fruta_agregada:
                 fruta_agregada = intentar_agregar_fruta()
@@ -100,5 +139,5 @@ def mostrar_menu():
             print("Saliendo del programa...\n")
             break
         else:
-            print("Opción no válida. Por favor, seleccione una opción del menú.\n")
+            print("Opción no válida. Por favor, seleccione una opción del menú.\n")""" 
 
