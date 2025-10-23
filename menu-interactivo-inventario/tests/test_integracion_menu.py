@@ -11,17 +11,20 @@ with patch('builtins.input') as mock_input:
     mock_input.return_value = '5'  # Simular salir del menú
     import menu_inventario
 
-class TestIntegracionMenuFrutas(unittest.TestCase):
-    
+# Importar el diccionario productos desde el módulo correcto
+from productos.operaciones import productos
+
+class TestIntegracionMenuInventario(unittest.TestCase):
+
     def setUp(self):
         """Configurar el estado inicial antes de cada test"""
         # Limpiar el diccionario de productos antes de cada test
-        menu_inventario.productos.clear()
+        productos.clear()
     
     def tearDown(self):
         """Limpiar después de cada test"""
         # Limpiar el diccionario de productos después de cada test
-        menu_inventario.productos.clear()
+        productos.clear()
 
     @patch('builtins.input', side_effect=[
         '1',           # Agregar producto
@@ -43,18 +46,18 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar que se agregaron los productos
-        self.assertEqual(len(menu_inventario.productos), 2)
-        self.assertIn('manzana', menu_inventario.productos)
-        self.assertIn('tomate', menu_inventario.productos)
+        self.assertEqual(len(productos), 2)
+        self.assertIn('manzana', productos)
+        self.assertIn('tomate', productos)
         
         # Verificar los datos de los productos
-        self.assertEqual(menu_inventario.productos['manzana']['tipo'], 'fruta')
-        self.assertEqual(menu_inventario.productos['manzana']['precio'], 100.5)
-        self.assertEqual(menu_inventario.productos['manzana']['stock'], 50)
+        self.assertEqual(productos['manzana']['tipo'], 'fruta')
+        self.assertEqual(productos['manzana']['precio'], 100.5)
+        self.assertEqual(productos['manzana']['stock'], 50)
         
-        self.assertEqual(menu_inventario.productos['tomate']['tipo'], 'verdura')
-        self.assertEqual(menu_inventario.productos['tomate']['precio'], 25.0)
-        self.assertEqual(menu_inventario.productos['tomate']['stock'], 100)
+        self.assertEqual(productos['tomate']['tipo'], 'verdura')
+        self.assertEqual(productos['tomate']['precio'], 25.0)
+        self.assertEqual(productos['tomate']['stock'], 100)
         
         # Verificar algunas llamadas clave de print
         expected_messages = [
@@ -92,9 +95,9 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar estado final: solo debe quedar lechuga
-        self.assertEqual(len(menu_inventario.productos), 1)
-        self.assertIn('lechuga', menu_inventario.productos)
-        self.assertNotIn('piña', menu_inventario.productos)
+        self.assertEqual(len(productos), 1)
+        self.assertIn('lechuga', productos)
+        self.assertNotIn('piña', productos)
         
         # Verificar mensajes clave
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])
@@ -127,8 +130,8 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar que solo se agregó uva (cancelar no agregó nada)
-        self.assertEqual(len(menu_inventario.productos), 1)
-        self.assertIn('uva', menu_inventario.productos)
+        self.assertEqual(len(productos), 1)
+        self.assertIn('uva', productos)
         
         # Verificar mensajes de cancelación
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])
@@ -172,9 +175,9 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar que solo se agregaron los productos válidos
-        self.assertEqual(len(menu_inventario.productos), 2)
-        self.assertIn('naranja', menu_inventario.productos)
-        self.assertIn('apio', menu_inventario.productos)
+        self.assertEqual(len(productos), 2)
+        self.assertIn('naranja', productos)
+        self.assertIn('apio', productos)
         
         # Verificar mensajes de validación
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])
@@ -207,13 +210,13 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
     def test_flujo_actualizacion_productos(self, mock_print, mock_input):
         """Test de integración: actualización de productos"""
         # Precargar un producto
-        menu_inventario.productos = {'manzana': {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}}
+        productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
         
         menu_inventario.mostrar_menu()
         
         # Verificar que se actualizaron los valores
-        self.assertEqual(menu_inventario.productos['manzana']['precio'], 150.0)
-        self.assertEqual(menu_inventario.productos['manzana']['stock'], 75)
+        self.assertEqual(productos['manzana']['precio'], 150.0)
+        self.assertEqual(productos['manzana']['stock'], 75)
         
         # Verificar mensajes de actualización
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])
@@ -246,8 +249,8 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar que el producto sigue ahí (no se eliminó)
-        self.assertEqual(len(menu_inventario.productos), 1)
-        self.assertIn('durazno', menu_inventario.productos)
+        self.assertEqual(len(productos), 1)
+        self.assertIn('durazno', productos)
         
         # Verificar mensajes de error y cancelación
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])
@@ -279,8 +282,8 @@ class TestIntegracionMenuFrutas(unittest.TestCase):
         menu_inventario.mostrar_menu()
         
         # Verificar que se agregó el producto después de las opciones inválidas
-        self.assertEqual(len(menu_inventario.productos), 1)
-        self.assertIn('frutilla', menu_inventario.productos)
+        self.assertEqual(len(productos), 1)
+        self.assertIn('frutilla', productos)
         
         # Verificar mensajes de error para opciones inválidas
         calls_str = ''.join([str(call) for call in mock_print.call_args_list])

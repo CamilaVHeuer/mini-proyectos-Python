@@ -15,16 +15,23 @@ Un sistema completo de gestión de inventario desarrollado en Python que permite
 - 📦 **Control de stock** con números enteros
 - 🥬 **Categorización** por tipo (frutas/verduras)
 - 🧪 **Suite completa de tests** (unitarios e integración)
+- 🏗️ **Arquitectura modular** con separación de responsabilidades
+- 📦 **Paquetes Python** organizados y reutilizables
 
 ## 📁 Estructura del Proyecto
 
 ```
 menu-interactivo-inventario/
-├── menu_inventario.py         # 📄 Lógica principal del sistema de inventario
-├── run_menu_inventario.py         # 🚀 Script de ejecución
-├── tests/                     # 🧪 Suite de tests
-│   ├── __init__.py           # 📦 Paquete Python
-│   ├── test_unitario_menu.py   # 🔬 Tests unitarios (60+ tests)
+├── menu_inventario.py         # 📄 Módulo principal del menú interactivo
+├── run_menu_inventario.py     # 🚀 Script de ejecución
+├── productos/                 # 📦 Paquete modular del sistema
+│   ├── __init__.py           # 🔧 Configuración del paquete
+│   ├── validaciones.py       # ✅ Funciones puras de validación
+│   └── operaciones.py        # 🔄 Operaciones CRUD con estado
+├── tests/                     # 🧪 Suite completa de tests
+│   ├── __init__.py           # 📦 Paquete de tests
+│   ├── test_validaciones.py  # 🔬 Tests de validaciones (46 tests)
+│   ├── test_operaciones.py   # ⚙️ Tests de operaciones CRUD
 │   └── test_integracion_menu.py # 🔄 Tests de integración (7 tests)
 ├── .github/                   # ⚙️ CI/CD
 │   └── workflows/
@@ -162,15 +169,18 @@ Puedes cancelar cualquier operación usando:
 
 ## 🧪 Testing
 
-El proyecto incluye una suite completa de tests con **67+ casos de prueba**.
+El proyecto incluye una suite completa de tests modularizada con **50+ casos de prueba** organizados por responsabilidades.
 
 ### Ejecutar Tests
 
 ```bash
-# Tests unitarios (60+ tests)
-python -m unittest tests.test_unitario_menu -v
+# Tests de validaciones (46 tests - funciones puras)
+python -m unittest tests.test_validaciones -v
 
-# Tests de integración (7 tests)
+# Tests de operaciones CRUD
+python -m unittest tests.test_operaciones -v
+
+# Tests de integración (7 tests - flujo completo)
 python -m unittest tests.test_integracion_menu -v
 
 # Todos los tests
@@ -182,14 +192,23 @@ pytest tests/ -v
 
 ### Cobertura de Tests
 
-#### Tests Unitarios
+#### Tests de Validaciones (`test_validaciones.py`)
 
-- ✅ Validación de nombres, tipos, precios y stock
+- ✅ Validación de nombres con caracteres españoles
+- ✅ Validación de tipos (fruta/verdura)
+- ✅ Validación de precios numéricos
+- ✅ Validación de stock entero
+- ✅ Casos edge y entradas inválidas
+- ✅ **46 tests** de funciones puras sin efectos secundarios
+
+#### Tests de Operaciones (`test_operaciones.py`)
+
 - ✅ Agregar productos (casos válidos e inválidos)
 - ✅ Actualizar productos (precio y stock)
 - ✅ Eliminar productos (confirmación y cancelación)
 - ✅ Mostrar productos (inventario vacío y con elementos)
 - ✅ Manejo de duplicados y productos no encontrados
+- ✅ Tests con manejo de estado del diccionario `productos`
 
 #### Tests de Integración
 
@@ -210,21 +229,59 @@ El proyecto utiliza **GitHub Actions** para integración continua:
 - Ejecuta tests unitarios e integración por separado
 ```
 
-## 🏗️ Arquitectura
+## 🏗️ Arquitectura Modular
 
-### Componentes Principales
+### Organización del Código
 
-#### `menu_inventario.py`
+El proyecto sigue una **arquitectura modular** que separa las responsabilidades:
 
-- `validar_nombre()`: Validación de nombres con regex
-- `validar_tipo()`: Validación de tipos (fruta/verdura)
-- `validar_precio()`: Validación de precios numéricos
-- `validar_stock()`: Validación de stock entero
-- `intentar_agregar_producto()`: Lógica completa de agregado
-- `intentar_actualizar_producto()`: Lógica de actualización
-- `intentar_eliminar_producto()`: Lógica de eliminación
-- `mostrar_productos()`: Visualización del inventario
-- `mostrar_menu()`: Bucle principal del menú
+#### Paquete `productos/`
+
+**`validaciones.py` - Funciones Puras**
+
+```python
+# Funciones sin efectos secundarios - fáciles de testear
+validar_nombre(entrada)     # Valida nombres con regex español
+validar_tipo(entrada)       # Valida tipos fruta/verdura
+validar_precio(entrada)     # Valida precios numéricos positivos
+validar_stock(entrada)      # Valida stock entero no negativo
+```
+
+**`operaciones.py` - Operaciones CRUD**
+
+```python
+# Funciones con estado - manejan el diccionario productos
+intentar_agregar_producto()     # Lógica completa de agregado
+mostrar_productos()             # Visualización del inventario
+intentar_actualizar_producto()  # Lógica de actualización
+intentar_eliminar_producto()    # Lógica de eliminación
+productos = {}                  # Diccionario global del inventario
+```
+
+**`__init__.py` - Configuración del Paquete**
+
+```python
+# Permite importaciones flexibles:
+from productos import validar_nombre, productos
+from productos.validaciones import validar_precio
+from productos.operaciones import intentar_agregar_producto
+```
+
+#### Módulo Principal
+
+**`menu_inventario.py`**
+
+```python
+# Importa funciones desde el paquete modular
+from productos.operaciones import (
+    intentar_agregar_producto,
+    mostrar_productos,
+    intentar_actualizar_producto,
+    intentar_eliminar_producto
+)
+
+def mostrar_menu():  # Bucle principal del menú interactivo
+```
 
 #### Sistema de Estados
 
@@ -239,48 +296,13 @@ Las funciones retornan tuplas con estados descriptivos:
 ('no_encontrado', None) # Producto no existe
 ```
 
-#### Estructura de Datos
-
-```python
-productos = {
-    'manzana': {
-        'tipo': 'fruta',
-        'precio': 100.50,
-        'stock': 50
-    },
-    'tomate': {
-        'tipo': 'verdura',
-        'precio': 25.00,
-        'stock': 100
-    }
-}
-```
-
 ## 👥 Autor
 
 - **Camila V. Heuer** - [@CamilaVHeuer](https://github.com/CamilaVHeuer)
 
-## 📊 Sobre el Proyecto
-
-- Proyecto desarrollado como parte del aprendizaje de Python
-- Implementa mejores prácticas de testing y CI/CD
-- Ejemplo de aplicación de gestión de inventario con consola interactiva
-- Manejo completo de CRUD (Create, Read, Update, Delete)
-- Validación robusta de datos de entrada
-- Arquitectura modular y escalable
-
 ---
 
-### 📊 Estadísticas del Proyecto
-
-- **Líneas de código**: ~600+
-- **Tests**: 67+ casos de prueba
-- **Cobertura**: Funcionalidad completa
-- **Funciones de validación**: 4 especializadas
-- **Operaciones CRUD**: Completas
-- **Dependencias**: Solo biblioteca estándar de Python
-
-### 🔗 Enlaces Útiles
+### Enlaces Útiles
 
 - [Documentación de Python unittest](https://docs.python.org/3/library/unittest.html)
 - [Regex en Python](https://docs.python.org/3/library/re.html)
