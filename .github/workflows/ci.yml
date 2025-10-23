@@ -1,10 +1,10 @@
-name: Tests Menu Frutas
+name: Tests Menu Inventario
 
 on:
   pull_request:
     branches: ["main"]
     paths:
-      - "menu-interactivo-frutas/**"
+      - "menu-interactivo-inventario/**"
 
 jobs:
   test:
@@ -21,9 +21,9 @@ jobs:
           python-version: 3.11
 
       - name: Run unit tests
-        working-directory: menu-interactivo-frutas
-        run: python -m unittest tests.test_menu_frutas -v
+        working-directory: menu-interactivo-inventario
+        run: python -m unittest tests.test_unitario_menu -v
 
       - name: Run integration tests
-        working-directory: menu-interactivo-frutas
+        working-directory: menu-interactivo-inventario
         run: python -m unittest tests.test_integracion_menu -v
