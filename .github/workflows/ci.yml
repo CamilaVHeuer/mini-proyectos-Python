@@ -3,8 +3,6 @@ name: Tests Menu Inventario
 on:
   pull_request:
     branches: ["main"]
-    paths:
-      - "menu-interactivo-inventario/**"
 
 jobs:
   test:
