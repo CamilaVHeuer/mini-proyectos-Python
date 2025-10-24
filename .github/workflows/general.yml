@@ -1,0 +1,14 @@
+name: 🧩 General Checks
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths-ignore:
+      - "menu-interactivo-inventario/**"
+
+jobs:
+  info:
+    name: General changes (no tests)
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "📄 Cambios generales detectados (README, configs, etc). No hay tests que ejecutar."

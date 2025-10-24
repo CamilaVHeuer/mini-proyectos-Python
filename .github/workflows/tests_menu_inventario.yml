@@ -1,0 +1,41 @@
+name: Tests Menu Inventario
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "menu-interactivo-inventario/**"
+      - ".github/workflows/tests_menu_inventario.yml"
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Run validation tests
+        working-directory: menu-interactivo-inventario
+        run: python -m unittest tests.test_validaciones -v
+
+      - name: Run operations tests
+        working-directory: menu-interactivo-inventario
+        run: python -m unittest tests.test_operaciones -v
+
+      - name: Run integration tests
+        working-directory: menu-interactivo-inventario
+        run: python -m unittest tests.test_integracion_menu -v
+
+      - name: Run all tests summary
+        working-directory: menu-interactivo-inventario
+        run: |
+          echo "🧪 Running complete test suite..."
+          python -m unittest discover tests -v
+          echo "✅ All tests completed!"
