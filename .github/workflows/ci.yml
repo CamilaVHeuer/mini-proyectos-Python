@@ -24,7 +24,7 @@ jobs:
 
       - name: Run dictionary operations tests
         working-directory: menu-interactivo-inventario
-        run: python -m unittest tests.test_operaciones_diccionario -v
+        run: python -m unittest tests.test_operaciones_dicc -v
 
       - name: Run database operations tests
         working-directory: menu-interactivo-inventario
