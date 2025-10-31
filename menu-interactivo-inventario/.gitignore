@@ -1,1 +1,4 @@
 __pycache__/
+.env
+README_DATABASE_SETUP.md
+security_setup.sql

@@ -1,6 +1,6 @@
-# � Sistema de Gestión de Inventario
+# 🍎 Sistema de Gestión de Inventario
 
-Un sistema completo de gestión de inventario desarrollado en Python que permite administrar productos (frutas y verduras) con información detallada de tipo, precio y stock a través de un menú interactivo de consola.
+Un sistema completo de gestión de inventario desarrollado en Python que permite administrar productos (frutas y verduras) con **almacenamiento dual** (diccionario en memoria + base de datos MySQL) a través de un menú interactivo de consola. Sistema de Gestión de Inventario
 
 ## 🚀 Características
 
@@ -17,26 +17,32 @@ Un sistema completo de gestión de inventario desarrollado en Python que permite
 - 🧪 **Suite completa de tests** (unitarios e integración)
 - 🏗️ **Arquitectura modular** con separación de responsabilidades
 - 📦 **Paquetes Python** organizados y reutilizables
+- 🎯 **Almacenamiento dual**: Diccionario (memoria) + MySQL (persistente)
+- ⚙️ **Configuración flexible** con variables de entorno (.env)
 
 ## 📁 Estructura del Proyecto
 
 ```
 menu-interactivo-inventario/
-├── menu_inventario.py         # 📄 Módulo principal del menú interactivo
-├── run_menu_inventario.py     # 🚀 Script de ejecución
-├── productos/                 # 📦 Paquete modular del sistema
-│   ├── __init__.py           # 🔧 Configuración del paquete
-│   ├── validaciones.py       # ✅ Funciones puras de validación
-│   └── operaciones.py        # 🔄 Operaciones CRUD con estado
-├── tests/                     # 🧪 Suite completa de tests
-│   ├── __init__.py           # 📦 Paquete de tests
-│   ├── test_validaciones.py  # 🔬 Tests de validaciones (46 tests)
-│   ├── test_operaciones.py   # ⚙️ Tests de operaciones CRUD
-│   └── test_integracion_menu.py # 🔄 Tests de integración (7 tests)
-├── .github/                   # ⚙️ CI/CD
-│   └── workflows/
-│       └── ci.yml            # 🤖 GitHub Actions
-└── README.md                 # 📖 Este archivo
+├── menu_inventario.py              # 📄 Módulo principal del menú interactivo
+├── run_menu_inventario.py          # 🚀 Script de ejecución
+├── .env.example                    # 📋 Plantilla de configuración
+├── productos/                      # 📦 Paquete modular del sistema
+│   ├── __init__.py                # 🔧 Configuración del paquete
+│   ├── validaciones.py            # ✅ Funciones puras de validación
+│   ├── database.py                # 🗄️ Conexión MySQL + estructura de tablas
+│   ├── operaciones_diccionario.py # 💾 Operaciones CRUD en memoria
+│   └── operaciones_bd.py          # �️ Operaciones CRUD en MySQL
+├── tests/                          # 🧪 Suite completa de tests
+│   ├── __init__.py                # 📦 Paquete de tests
+│   ├── test_validaciones.py       # 🔬 Tests de validaciones (27 tests)
+│   ├── test_operaciones_diccionario.py # 💾 Tests backend memoria
+│   ├── test_operaciones_bd.py     # 🗃️ Tests backend MySQL
+│   └── test_integracion_menu.py   # 🔄 Tests de integración completa
+├── sql/                           # 🗄️ Scripts de base de datos
+│   └── database_setup.sql         # 📜 Creación de bases de datos
+├── setup_database.sh              # 🚀 Script automático de configuración BD
+└── README.md                      # 📖 Este archivo
 ```
 
 ## 🛠️ Instalación
@@ -44,6 +50,7 @@ menu-interactivo-inventario/
 ### Requisitos
 
 - Python 3.11 o superior
+- MySQL 8.0 o superior (para almacenamiento persistente)
 - Sistema operativo: Windows, macOS, Linux
 
 ### Instalación
@@ -55,12 +62,43 @@ git clone https://github.com/CamilaVHeuer/mini-proyectos-Python.git
 # Navegar al directorio del proyecto
 cd mini-proyectos-Python/menu-interactivo-inventario
 
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de MySQL
+
+# Crear archivo de configuración de usuarios MySQL
+# IMPORTANTE: Crea sql/security_setup.sql con tus usuarios y contraseñas
+# (Este archivo es requerido por setup_database.sh)
+
 # (Opcional) Crear entorno virtual
 python -m venv venv
 source venv/bin/activate  # En Windows: venv\Scripts\activate
+
+# Instalar dependencias
+pip install mysql-connector-python python-dotenv
+
+# Configurar base de datos (solo si usarás almacenamiento BD)
+chmod +x setup_database.sh
+./setup_database.sh
+
+# Alternativa: Configuración manual de BD
+# mysql -u root -p < sql/database_setup.sql
+# Luego crear usuarios MySQL manualmente
 ```
 
 ## 🎮 Uso
+
+### Configuración del Almacenamiento
+
+El sistema soporta **dos tipos de almacenamiento**:
+
+```bash
+# Archivo .env
+INVENTARIO_MODO=diccionario  # Almacenamiento en memoria (temporal)
+INVENTARIO_MODO=bd          # Almacenamiento en MySQL (persistente)
+```
+
+> **Nota:** Para modo `bd` es necesario ejecutar `./setup_database.sh` primero para configurar las bases de datos y usuarios de MySQL.
 
 ### Ejecutar la aplicación
 
@@ -72,11 +110,11 @@ python run_menu_inventario.py
 
 ```
 --- Menú de Gestión de Inventario ---
-1. Agregar producto
-2. Mostrar productos
-3. Actualizar producto
-4. Eliminar producto
-5. Salir
+1. ➕ Agregar producto
+2. 📋 Mostrar productos
+3. ✏️ Actualizar producto
+4. ❌ Eliminar producto
+5. 🚪 Salir
 -----------------------------------
 ```
 
@@ -169,26 +207,16 @@ Puedes cancelar cualquier operación usando:
 
 ## 🧪 Testing
 
-El proyecto incluye una suite completa de tests modularizada con **50+ casos de prueba** organizados por responsabilidades.
+El proyecto cuenta con una suite completa de tests unitarios y de integración, que cubre validaciones, operaciones en memoria, operaciones en base de datos y flujos de integración. Esta suite se ejecuta de forma completa en local.
 
-### Ejecutar Tests
+### Ejecución de tests
 
 ```bash
-# Tests de validaciones (46 tests - funciones puras)
-python -m unittest tests.test_validaciones -v
-
-# Tests de operaciones CRUD
-python -m unittest tests.test_operaciones -v
-
-# Tests de integración (7 tests - flujo completo)
-python -m unittest tests.test_integracion_menu -v
-
-# Todos los tests
+# Todos los tests (local)
 python -m unittest discover tests -v
-
-# Con pytest (si está instalado)
-pytest tests/ -v
 ```
+
+> **Nota:** Los tests de base de datos e integración requieren tener MySQL y el archivo `.env` configurados correctamente.
 
 ### Cobertura de Tests
 
@@ -199,106 +227,58 @@ pytest tests/ -v
 - ✅ Validación de precios numéricos
 - ✅ Validación de stock entero
 - ✅ Casos edge y entradas inválidas
-- ✅ **46 tests** de funciones puras sin efectos secundarios
+- ✅ **27 tests** de funciones puras sin efectos secundarios
 
-#### Tests de Operaciones (`test_operaciones.py`)
+#### Tests de Backend Diccionario (`test_operaciones_diccionario.py`)
 
-- ✅ Agregar productos (casos válidos e inválidos)
-- ✅ Actualizar productos (precio y stock)
-- ✅ Eliminar productos (confirmación y cancelación)
-- ✅ Mostrar productos (inventario vacío y con elementos)
-- ✅ Manejo de duplicados y productos no encontrados
-- ✅ Tests con manejo de estado del diccionario `productos`
+- ✅ Operaciones CRUD en memoria (diccionario Python)
+- ✅ Manejo de estado temporal del inventario
+- ✅ Validación de duplicados en memoria
+- ✅ Tests rápidos sin dependencias externas
 
-#### Tests de Integración
+#### Tests de Backend Base de Datos (`test_operaciones_bd.py`)
 
-- ✅ Flujos completos de usuario
-- ✅ Operaciones múltiples en secuencia
-- ✅ Manejo de entradas inválidas con retry
-- ✅ Cancelaciones en diferentes puntos
-- ✅ Casos edge y validación de estados
+- ✅ Operaciones CRUD en MySQL con transacciones
+- ✅ Tests en modo aislado (base de datos de prueba)
+- ✅ Manejo de concurrencia y consistencia de datos
+- ✅ Validación de persistencia entre sesiones
+
+#### Tests de Integración (`test_integracion_menu.py`)
+
+- ✅ Flujos CRUD completos en **ambos backends**
+- ✅ Consistencia de comportamiento (diccionario vs MySQL)
+- ✅ Tests de casos edge y validación de estados
+- ✅ Simulación realista de interacciones de usuario
 
 ## 🤖 CI/CD
 
 El proyecto utiliza **GitHub Actions** para integración continua:
 
 ```yaml
-# .github/workflows/ci.yml
+# ../../.github/workflows/ci.yml (nivel repositorio)
 - Ejecuta tests automáticamente en cada Pull Request
 - Soporta Python 3.11
-- Ejecuta tests unitarios e integración por separado
+- En CI solo se ejecutan tests de validaciones y de backend diccionario
+- Los tests de base de datos e integración se ejecutan solo en local
 ```
 
-## 🏗️ Arquitectura Modular
+## 🏗️ Arquitectura
 
-### Organización del Código
+El proyecto usa **almacenamiento dual** con una arquitectura modular clara:
 
-El proyecto sigue una **arquitectura modular** que separa las responsabilidades:
+- **`validaciones.py`** - Funciones puras de validación (sin efectos secundarios)
+- **`operaciones_diccionario.py`** - Backend de memoria (rápido, temporal)
+- **`operaciones_bd.py`** - Backend MySQL (persistente, transaccional)
+- **`database.py`** - Gestión de conexiones y estructura de tablas
+- **`menu_inventario.py`** - Selección automática de backend según configuración
 
-#### Paquete `productos/`
-
-**`validaciones.py` - Funciones Puras**
-
-```python
-# Funciones sin efectos secundarios - fáciles de testear
-validar_nombre(entrada)     # Valida nombres con regex español
-validar_tipo(entrada)       # Valida tipos fruta/verdura
-validar_precio(entrada)     # Valida precios numéricos positivos
-validar_stock(entrada)      # Valida stock entero no negativo
-```
-
-**`operaciones.py` - Operaciones CRUD**
-
-```python
-# Funciones con estado - manejan el diccionario productos
-intentar_agregar_producto()     # Lógica completa de agregado
-mostrar_productos()             # Visualización del inventario
-intentar_actualizar_producto()  # Lógica de actualización
-intentar_eliminar_producto()    # Lógica de eliminación
-productos = {}                  # Diccionario global del inventario
-```
-
-**`__init__.py` - Configuración del Paquete**
-
-```python
-# Permite importaciones flexibles:
-from productos import validar_nombre, productos
-from productos.validaciones import validar_precio
-from productos.operaciones import intentar_agregar_producto
-```
-
-#### Módulo Principal
-
-**`menu_inventario.py`**
-
-```python
-# Importa funciones desde el paquete modular
-from productos.operaciones import (
-    intentar_agregar_producto,
-    mostrar_productos,
-    intentar_actualizar_producto,
-    intentar_eliminar_producto
-)
-
-def mostrar_menu():  # Bucle principal del menú interactivo
-```
-
-#### Sistema de Estados
-
-Las funciones retornan tuplas con estados descriptivos:
-
-```python
-('ok', producto)        # Operación exitosa
-('cancelado', None)     # Usuario canceló
-('vacio', None)         # Entrada vacía
-('invalido', None)      # Entrada no válida
-('duplicado', producto) # Producto ya existe
-('no_encontrado', None) # Producto no existe
-```
+**Sistema de Estados:** Las funciones retornan tuplas descriptivas como `('ok', producto)`, `('cancelado', None)`, `('duplicado', producto)`, etc.
 
 ## 👥 Autor
 
-- **Camila V. Heuer** - [@CamilaVHeuer](https://github.com/CamilaVHeuer)
+- **Camila V. Heuer**
+  - GitHub: [@CamilaVHeuer](https://github.com/CamilaVHeuer)
+  - LinkedIn: [Camila V. Heuer](https://www.linkedin.com/in/camilavheuer/)
 
 ---
 
@@ -307,6 +287,5 @@ Las funciones retornan tuplas con estados descriptivos:
 - [Documentación de Python unittest](https://docs.python.org/3/library/unittest.html)
 - [Regex en Python](https://docs.python.org/3/library/re.html)
 - [GitHub Actions](https://docs.github.com/en/actions)
-- [Python Dictionaries](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)
 
 ¡Disfruta gestionando tu inventario de productos! 🍎🥬📦

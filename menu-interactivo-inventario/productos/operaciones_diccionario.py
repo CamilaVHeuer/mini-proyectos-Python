@@ -1,4 +1,4 @@
-#Funciones para agregar, mostrar, actualizar y eliminar productos del inventario
+# Funciones para agregar, mostrar, actualizar y eliminar productos del inventario usando diccionario
 from productos.validaciones import validar_nombre, validar_tipo, validar_precio, validar_stock
 
 productos = {}  # Diccionario para almacenar los productos
@@ -48,7 +48,7 @@ def intentar_agregar_producto():
     
     # Si la entrada es válida, la agrego al diccionario
     productos[nombre] = {"tipo": tipo, "precio": precio, "stock": stock}
-    print(f"✅ Producto '{nombre}' agregado con éxito.")
+    print(f"✅ Producto '{nombre}' agregado exitosamente.")
     return ('ok', nombre)  # Indico que se agregó el producto con éxito
 
 

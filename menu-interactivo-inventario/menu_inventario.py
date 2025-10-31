@@ -1,18 +1,44 @@
 #Implementación de un menú para gestionar un inventario de productos.
-#Se podrá agregar, mostrar, actualizar y eliminar productos de un inventario (que será un diccionario).
+#Permite alternar entre almacenamiento en diccionario (memoria) o base de datos MySQL
+#usando la variable de entorno INVENTARIO_MODO.
 #El programa presentará un menú que le permitirá al usuario elegir qué acción desea realizar.
-#El programa se ejecutará hasta que el usuario decida salir.
 
-from productos.operaciones import intentar_agregar_producto, mostrar_productos, intentar_actualizar_producto, intentar_eliminar_producto
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
+# Determinar modo de almacenamiento desde variable de entorno
+MODO_ALMACENAMIENTO = os.getenv('INVENTARIO_MODO', 'diccionario').lower()
+
+# Imports dinámicos según el modo configurado
+if MODO_ALMACENAMIENTO == 'bd':
+    from productos.operaciones_bd import (
+        intentar_agregar_producto,
+        mostrar_productos,
+        intentar_actualizar_producto,
+        intentar_eliminar_producto
+    )
+    MODO_TEXTO = "Base de datos MySQL"
+else:
+    from productos.operaciones_diccionario import (
+        intentar_agregar_producto, 
+        mostrar_productos, 
+        intentar_actualizar_producto, 
+        intentar_eliminar_producto
+    )
+    MODO_TEXTO = "Diccionario (en memoria)"
 
 def mostrar_menu():
+    """Menú principal - modo determinado por variable de entorno"""
     while True:
-        print("\n--- Menú ---")
-        print("1. Agregar producto")
-        print("2. Mostrar productos")
-        print("3. Actualizar producto")
-        print("4. Eliminar producto")
-        print("5. Salir")
+        print(f"\n--- Menú - Modo: {MODO_TEXTO} ---")
+        print("1. ➕ Agregar producto")
+        print("2. 📋 Mostrar productos")
+        print("3. ✏️ Actualizar producto")
+        print("4. 🗑️ Eliminar producto")
+        print("5. 🚪 Salir")
         print("---------------")
 
         opcion = input("Seleccione una opción del 1 al 5: ")
@@ -30,16 +56,26 @@ def mostrar_menu():
                 
             case "2":
                 mostrar_productos()
+                
             case "3":
                 while True:
                     estado, _ = intentar_actualizar_producto()
                     if estado in ["ok", "cancelado", "no_encontrado"]:
                         break
+                        
             case "4":
                 while True:
                     estado, _ = intentar_eliminar_producto()
                     if estado in ["ok", "cancelado", "no_encontrado"]:
                         break
+                        
             case "5":
                 print("Saliendo del programa...\n")
                 break
+
+def main():
+    """Función principal del programa"""
+    mostrar_menu()
+
+if __name__ == "__main__":
+    main()

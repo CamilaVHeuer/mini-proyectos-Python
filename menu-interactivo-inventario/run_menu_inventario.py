@@ -1,4 +1,5 @@
-#llamado a la funcion principal para ejecutar el menu
-from menu_inventario import mostrar_menu
+# Llamado a la función principal para ejecutar el menú
+from menu_inventario import main
 
-mostrar_menu()
+if __name__ == "__main__":
+    main()

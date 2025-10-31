@@ -3,30 +3,12 @@
 Paquete que contiene los módulos para la gestión de inventario:
 
 - validaciones.py: Funciones puras para validar entradas de usuario
-- operaciones.py: Operaciones CRUD para el manejo del inventario
+- operaciones_diccionario.py: Operaciones CRUD usando diccionario en memoria
+- operaciones_bd.py: Operaciones CRUD usando base de datos MySQL
+- database.py: Gestión de conexiones a la base de datos
+
+Para usar las funciones, importa directamente desde cada módulo:
+    from productos.validaciones import validar_nombre
+    from productos.operaciones_diccionario import intentar_agregar_producto
+    from productos.operaciones_bd import agregar_producto_bd
 """
-
-# Importaciones opcionales para facilitar el acceso directo
-from .validaciones import validar_nombre, validar_tipo, validar_precio, validar_stock
-from .operaciones import (
-    intentar_agregar_producto,
-    mostrar_productos,
-    intentar_actualizar_producto,
-    intentar_eliminar_producto,
-    productos
-)
-
-__all__ = [
-    # Funciones de validación
-    'validar_nombre',
-    'validar_tipo', 
-    'validar_precio',
-    'validar_stock',
-    # Operaciones CRUD
-    'intentar_agregar_producto',
-    'mostrar_productos',
-    'intentar_actualizar_producto',
-    'intentar_eliminar_producto',
-    # Diccionario de productos
-    'productos'
-]
