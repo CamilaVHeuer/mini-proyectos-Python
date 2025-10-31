@@ -121,6 +121,26 @@ El portfolio está en **evolución constante**. Los próximos proyectos depender
 
 ---
 
+## 🧪 Testing y CI/CD
+
+- En GitHub Actions (CI) **solo se ejecutan automáticamente los tests de validaciones y de operaciones con diccionario** (memoria), para garantizar compatibilidad multiplataforma y evitar dependencias externas.
+- Los tests de base de datos y de integración **deben ejecutarse localmente**, donde puedes configurar MySQL y los usuarios según tu entorno.
+
+### Ejecución de tests
+
+```bash
+# En CI (GitHub Actions):
+python -m unittest tests.test_validaciones -v
+python -m unittest tests.test_operaciones_dicc -v
+
+# En local (todos los tests):
+python -m unittest discover tests -v
+```
+
+> **Nota:** Si quieres correr los tests de base de datos/integración, asegúrate de tener MySQL configurado y el archivo `.env` con los datos correctos.
+
+---
+
 ## 👥 Contacto
 
 **Camila V. Heuer** - Ingeniera & Desarrolladora

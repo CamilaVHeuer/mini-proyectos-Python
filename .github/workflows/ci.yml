@@ -30,14 +30,6 @@ jobs:
         working-directory: menu-interactivo-inventario
         run: python -m unittest tests.test_operaciones_dicc -v
 
-      - name: Run database operations tests
-        working-directory: menu-interactivo-inventario
-        run: python -m unittest tests.test_operaciones_bd -v
-
-      - name: Run integration tests
-        working-directory: menu-interactivo-inventario
-        run: python -m unittest tests.test_integracion_menu -v
-
       - name: Run all tests summary
         working-directory: menu-interactivo-inventario
         run: |

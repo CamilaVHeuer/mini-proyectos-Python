@@ -207,26 +207,16 @@ Puedes cancelar cualquier operación usando:
 
 ## 🧪 Testing
 
-El proyecto incluye una suite completa de tests modularizada con **50+ casos de prueba** organizados por responsabilidades.
+El proyecto cuenta con una suite completa de tests unitarios y de integración, que cubre validaciones, operaciones en memoria, operaciones en base de datos y flujos de integración. Esta suite se ejecuta de forma completa en local.
 
-### Ejecutar Tests
+### Ejecución de tests
 
 ```bash
-# Tests de validaciones (27 tests - funciones puras)
-python -m unittest tests.test_validaciones -v
-
-# Tests backend diccionario (memoria)
-python -m unittest tests.test_operaciones_diccionario -v
-
-# Tests backend base de datos (MySQL)
-python -m unittest tests.test_operaciones_bd -v
-
-# Tests de integración completa (ambos backends)
-python -m unittest tests.test_integracion_menu -v
-
-# Todos los tests
+# Todos los tests (local)
 python -m unittest discover tests -v
 ```
+
+> **Nota:** Los tests de base de datos e integración requieren tener MySQL y el archivo `.env` configurados correctamente.
 
 ### Cobertura de Tests
 
@@ -268,7 +258,8 @@ El proyecto utiliza **GitHub Actions** para integración continua:
 # ../../.github/workflows/ci.yml (nivel repositorio)
 - Ejecuta tests automáticamente en cada Pull Request
 - Soporta Python 3.11
-- Tests por backend: validaciones, diccionario, BD, integración
+- En CI solo se ejecutan tests de validaciones y de backend diccionario
+- Los tests de base de datos e integración se ejecutan solo en local
 ```
 
 ## 🏗️ Arquitectura
