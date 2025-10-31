@@ -22,9 +22,13 @@ jobs:
         working-directory: menu-interactivo-inventario
         run: python -m unittest tests.test_validaciones -v
 
-      - name: Run operations tests
+      - name: Run dictionary operations tests
         working-directory: menu-interactivo-inventario
-        run: python -m unittest tests.test_operaciones -v
+        run: python -m unittest tests.test_operaciones_diccionario -v
+
+      - name: Run database operations tests
+        working-directory: menu-interactivo-inventario
+        run: python -m unittest tests.test_operaciones_bd -v
 
       - name: Run integration tests
         working-directory: menu-interactivo-inventario

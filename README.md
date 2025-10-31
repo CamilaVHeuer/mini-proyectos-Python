@@ -9,10 +9,10 @@ Este repositorio documenta mi evolución como **Ingeniera-Desarrolladora**, apli
 ## 🚀 Tecnologías Principales
 
 - **🐍 Python** - Desarrollo backend y lógica de negocio
-- **🗄️ MySQL** - Gestión y persistencia de datos
-- **🧪 Testing** - Suite completa de tests unitarios e integración
-- **⚙️ CI/CD** - GitHub Actions para integración continua
-- **🏗️ Arquitectura Modular** - Código organizado y reutilizable
+- **🗄️ MySQL** - Gestión y persistencia de datos con transacciones
+- **🧪 Testing** - Suite completa: unitarios, integración y backends múltiples
+- **⚙️ CI/CD** - GitHub Actions con tests automáticos por backend
+- **🏗️ Arquitectura Dual** - Backends intercambiables (memoria/BD)
 
 ## 📋 Proyectos
 
@@ -20,24 +20,31 @@ Este repositorio documenta mi evolución como **Ingeniera-Desarrolladora**, apli
 
 **Estado:** ✅ Completado | **Complejidad:** Intermedia
 
-Un sistema completo de inventario con arquitectura modular que permite gestionar productos con validaciones robustas y operaciones CRUD.
+Un sistema completo de inventario con **almacenamiento dual** (memoria + MySQL) y arquitectura modular que permite gestionar productos con validaciones robustas y operaciones CRUD.
 
 **Características técnicas:**
 
-- 🏗️ **Arquitectura modular** - Separación clara entre validaciones puras y operaciones con estado
-- 🧪 **50+ tests** - Suite completa con tests unitarios, integración y CI/CD
+- � **Almacenamiento dual** - Backend de memoria (temporal) + MySQL (persistente)
+- �🏗️ **Arquitectura modular** - Separación clara entre backends y responsabilidades
+- 🧪 **50+ tests** - Suite completa: validaciones, diccionario, BD e integración
 - 🔄 **Validaciones avanzadas** - Regex para caracteres españoles, manejo de errores
-- 📦 **Paquetes Python** - Estructura profesional con `__init__.py` y imports optimizados
-- 🤖 **GitHub Actions** - Automatización de tests en cada PR
+- ⚙️ **Configuración flexible** - Variables de entorno (.env) para múltiples modos
+- 🤖 **GitHub Actions** - CI/CD con tests automáticos por backend
 
-**Tecnologías:** Python, unittest, GitHub Actions
+**Tecnologías:** Python, MySQL, unittest, python-dotenv, GitHub Actions
 
 ```bash
-# Ejecutar el proyecto
+# Ejecutar el proyecto (modo diccionario)
 cd menu-interactivo-inventario
+cp .env.example .env  # Configurar INVENTARIO_MODO=diccionario
 python run_menu_inventario.py
 
-# Ejecutar tests
+# Ejecutar con MySQL (requiere configuración)
+# Editar .env: INVENTARIO_MODO=bd
+# ./setup_database.sh  # Configurar BD
+# python run_menu_inventario.py
+
+# Ejecutar tests (4 suites: validaciones, diccionario, BD, integración)
 python -m unittest discover tests -v
 ```
 
@@ -45,24 +52,15 @@ python -m unittest discover tests -v
 
 ## 🔮 Próximos Proyectos
 
-### 🛒 Sistema de E-commerce
+### Por descubrir...
 
-**Planificado** - Sistema de comercio electrónico con gestión de productos, usuarios y pedidos
+El portfolio está en **evolución constante**. Los próximos proyectos dependerán de:
 
-- **Tecnologías previstas:** Python, MySQL, autenticación, APIs
+- 🎯 **Necesidades identificadas** - Problemas reales que requieran soluciones técnicas
+- 🚀 **Nuevas tecnologías** - Herramientas emergentes que aporten valor
+- 🏭 **Aplicaciones de ingeniería** - Oportunidades para combinar conocimiento técnico con desarrollo
 
-### 🏭 Planificador de Mantenimiento Industrial
-
-**En concepto** - Sistema para programar y gestionar mantenimiento en entornos industriales
-
-- **Enfoque:** Aplicación de conocimientos de ingeniería a software
-- **Tecnologías previstas:** Python, MySQL, análisis de datos, reportes
-
-### 🌐 Migración a Django
-
-**Futuro** - Escalado de proyectos hacia framework web completo
-
-- **Objetivo:** Interfaces web, APIs REST, administración avanzada
+**Filosofía:** Calidad sobre cantidad. Cada proyecto debe aportar aprendizaje significativo y demostrar crecimiento técnico.
 
 ---
 
@@ -118,7 +116,7 @@ python -m unittest discover tests -v
 - **Proyectos completados:** 1
 - **Tests totales:** 50+
 - **Líneas de código:** 600+
-- **Tecnologías dominadas:** Python, MySQL, Testing, CI/CD
+- **Tecnologías dominadas:** Python, MySQL, Testing, CI/CD, Arquitecturas Duales
 - **Cobertura de tests:** Completa en todos los proyectos
 
 ---
