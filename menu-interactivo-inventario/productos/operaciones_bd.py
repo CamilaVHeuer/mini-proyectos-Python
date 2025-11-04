@@ -1,8 +1,8 @@
 # Funciones para agregar, mostrar, actualizar y eliminar productos del inventario usando base de datos MySQL
 from productos.validaciones import validar_nombre, validar_tipo, validar_precio, validar_stock
-from productos.database import obtener_conexion_base_datos
 
-def agregar_producto_bd(nombre, tipo, precio, stock, modo_prueba=False):
+
+def agregar_producto_bd(nombre, tipo, precio, stock, bd_conexion):
     """
     Agrega un producto usando UNIQUE constraint para evitar duplicados (thread-safe).
     
@@ -11,15 +11,11 @@ def agregar_producto_bd(nombre, tipo, precio, stock, modo_prueba=False):
         tipo (str): Tipo del producto ('fruta' o 'verdura')
         precio (float): Precio del producto
         stock (int): Stock disponible
-        modo_prueba (bool): Si True, usa la BD de pruebas
+        bd_conexion (DatabaseConnection): Conexión ya establecida
         
     Returns:
         bool: True si se agregó exitosamente, False en caso contrario
     """
-    bd = obtener_conexion_base_datos(modo_prueba)
-    if not bd:
-        print("❌ Error: No se pudo conectar a la base de datos")
-        return False
     
     try:
         # Insertar directamente - la BD maneja duplicados con UNIQUE constraint
@@ -27,14 +23,14 @@ def agregar_producto_bd(nombre, tipo, precio, stock, modo_prueba=False):
             INSERT INTO productos (nombre, tipo, precio, stock)
             VALUES (%s, %s, %s, %s)
         """
-        
-        exito = bd.ejecutar_consulta(
-            consulta_insertar, 
+
+        exito = bd_conexion.ejecutar_consulta(
+            consulta_insertar,
             (nombre, tipo, precio, stock)
         )
         
         if exito:
-            filas_afectadas = bd.cursor.rowcount
+            filas_afectadas = bd_conexion.cursor.rowcount
             if filas_afectadas > 0:
                 print(f"✅ Producto '{nombre}' agregado exitosamente a la base de datos")
                 return True
@@ -51,22 +47,16 @@ def agregar_producto_bd(nombre, tipo, precio, stock, modo_prueba=False):
         else:
             print(f"❌ Error inesperado al insertar producto: {e}")
         return False
-    finally:
-        bd.desconectar()  # Cierra su propia conexión
+    
 
 
-def mostrar_productos(modo_prueba=False):
+def mostrar_productos(bd_conexion):
     """
     Muestra todos los productos desde la base de datos MySQL
     
     Args:
-        modo_prueba (bool): Si True, usa la BD de pruebas
+        bd_conexion (DatabaseConnection): Conexión ya establecida
     """
-    bd = obtener_conexion_base_datos(modo_prueba)
-    if not bd:
-        print("❌ Error: No se pudo conectar a la base de datos")
-        return
-    
     try:
         consulta = """
             SELECT id, nombre, tipo, precio, stock, 
@@ -75,9 +65,9 @@ def mostrar_productos(modo_prueba=False):
             FROM productos 
             ORDER BY nombre
         """
-        
-        productos_bd = bd.ejecutar_consulta(consulta, obtener_resultados=True)
-        
+
+        productos_bd = bd_conexion.ejecutar_consulta(consulta, obtener_resultados=True)
+
         if productos_bd:
             print("\n📋 Lista de productos en la base de datos:")
             print("-" * 80)
@@ -94,11 +84,10 @@ def mostrar_productos(modo_prueba=False):
             
     except Exception as e:
         print(f"❌ Error inesperado: {e}")
-    finally:
-        bd.desconectar()
+  
 
 
-def actualizar_producto_bd(nombre, campo, nuevo_valor, modo_prueba=False):
+def actualizar_producto_bd(nombre, campo, nuevo_valor, bd_conexion):
     """
     Actualiza un producto en la base de datos MySQL
     
@@ -106,16 +95,11 @@ def actualizar_producto_bd(nombre, campo, nuevo_valor, modo_prueba=False):
         nombre (str): Nombre del producto a actualizar
         campo (str): Campo a actualizar ('precio' o 'stock')
         nuevo_valor (float|int): Nuevo valor para el campo
-        modo_prueba (bool): Si True, usa la BD de pruebas
-        
+        bd_conexion (DatabaseConnection): Conexión ya establecida
+
     Returns:
         bool: True si se actualizó exitosamente, False en caso contrario
-    """
-    bd = obtener_conexion_base_datos(modo_prueba)
-    if not bd:
-        print("❌ Error: No se pudo conectar a la base de datos")
-        return False
-    
+    """ 
     try:
         
         # Validar el campo a actualizar
@@ -125,9 +109,9 @@ def actualizar_producto_bd(nombre, campo, nuevo_valor, modo_prueba=False):
         
         # Actualizar el producto
         consulta_actualizar = f"UPDATE productos SET {campo} = %s WHERE nombre = %s"
-        
-        exito = bd.ejecutar_consulta(
-            consulta_actualizar, 
+
+        exito = bd_conexion.ejecutar_consulta(
+            consulta_actualizar,
             (nuevo_valor, nombre)
         )
         
@@ -135,7 +119,7 @@ def actualizar_producto_bd(nombre, campo, nuevo_valor, modo_prueba=False):
             print(f"❌ Error al intentar actualizar el producto '{nombre}'")
             return False
         #Verificar si se afectó alguna fila
-        filas_afectadas = bd.cursor.rowcount
+        filas_afectadas = bd_conexion.cursor.rowcount
         if filas_afectadas > 0:
             print(f"✅ {campo.capitalize()} del producto '{nombre}' actualizado a {nuevo_valor}")
             return True
@@ -146,8 +130,7 @@ def actualizar_producto_bd(nombre, campo, nuevo_valor, modo_prueba=False):
     except Exception as e:
         print(f"❌ Error inesperado: {e}")
         return False
-    finally:
-        bd.desconectar()
+    
 
 
 def eliminar_producto_bd(nombre, bd_conexion):
@@ -187,12 +170,12 @@ def eliminar_producto_bd(nombre, bd_conexion):
     # No cierra conexión - esa responsabilidad es del caller
 
 
-def intentar_agregar_producto(modo_prueba=False):
+def intentar_agregar_producto(bd_conexion):
     """
     Función interactiva para agregar un producto con validaciones usando BD
     
     Args:
-        modo_prueba (bool): Si True, usa la BD de pruebas
+         bd_conexion (DatabaseConnection): Conexión ya establecida
         
     Returns:
         tuple: (resultado, nombre) donde resultado puede ser:
@@ -238,7 +221,7 @@ def intentar_agregar_producto(modo_prueba=False):
         return ('invalido', None)
     
     # Intentar agregar a la base de datos
-    exito = agregar_producto_bd(nombre, tipo, precio, stock, modo_prueba)
+    exito = agregar_producto_bd(nombre, tipo, precio, stock, bd_conexion)
     if exito:
         return ('ok', nombre)
     else:
@@ -246,13 +229,13 @@ def intentar_agregar_producto(modo_prueba=False):
         return ('duplicado', nombre)
 
 
-def intentar_actualizar_producto(modo_prueba=False):
+def intentar_actualizar_producto(bd_conexion):
     """
     Función interactiva para actualizar un producto usando BD
     
     Args:
-        modo_prueba (bool): Si True, usa la BD de pruebas
-        
+        bd_conexion (DatabaseConnection): Conexión ya establecida
+
     Returns:
         tuple: (resultado, nombre) donde resultado puede ser:
                'ok', 'cancelado', 'vacio', 'invalido', 'no_encontrado'
@@ -278,8 +261,8 @@ def intentar_actualizar_producto(modo_prueba=False):
             if precio == 'invalido':
                 print("El precio debe ser un número positivo.\n")
                 return ('invalido', None)
-            
-            exito = actualizar_producto_bd(nombre, 'precio', precio, modo_prueba)
+
+            exito = actualizar_producto_bd(nombre, 'precio', precio, bd_conexion)
             if exito:
                 return ('ok', nombre)
             else:
@@ -291,8 +274,8 @@ def intentar_actualizar_producto(modo_prueba=False):
             if stock == 'invalido':
                 print("El stock debe ser un número entero no negativo.\n")
                 return ('invalido', None)
-            
-            exito = actualizar_producto_bd(nombre, 'stock', stock, modo_prueba)
+
+            exito = actualizar_producto_bd(nombre, 'stock', stock, bd_conexion)
             if exito:
                 return ('ok', nombre)
             else:
@@ -303,28 +286,23 @@ def intentar_actualizar_producto(modo_prueba=False):
             return ('invalido', None)
 
 
-def intentar_eliminar_producto(modo_prueba=False):
+def intentar_eliminar_producto(bd_conexion):
     """
     Función interactiva para eliminar un producto usando BD
     
     Args:
-        modo_prueba (bool): Si True, usa la BD de pruebas
+        bd_conexion (DatabaseConnection): Conexión ya establecida
         
     Returns:
         tuple: (resultado, nombre) donde resultado puede ser:
                'ok', 'cancelado', 'vacio', 'no_encontrado'
     """
-    # Una sola conexión para todo el flujo
-    bd = obtener_conexion_base_datos(modo_prueba)
-    if not bd:
-        print("❌ Error: No se pudo conectar a la base de datos")
-        return ('no_encontrado', None)
-    
+
     try:
         # Verificar si hay productos
         consulta_contar = "SELECT COUNT(*) as total FROM productos"
-        resultado = bd.ejecutar_consulta(consulta_contar, obtener_resultados=True)
-        
+        resultado = bd_conexion.ejecutar_consulta(consulta_contar, obtener_resultados=True)
+
         if not resultado or resultado[0]['total'] == 0:
             print("No hay productos en la base de datos.\n")
             return ('no_encontrado', None)
@@ -344,7 +322,7 @@ def intentar_eliminar_producto(modo_prueba=False):
         confirmacion = input('¿Está seguro que desea eliminar el producto? (s/n): ').strip().lower()
         if confirmacion == 's':
             # Pasar la conexión existente (NO modo_prueba)
-            exito = eliminar_producto_bd(nombre, bd)
+            exito = eliminar_producto_bd(nombre, bd_conexion)
             if exito:
                 return ('ok', nombre)
             else:
@@ -356,5 +334,4 @@ def intentar_eliminar_producto(modo_prueba=False):
     except Exception as e:
         print(f"❌ Error inesperado: {e}")
         return ('no_encontrado', None)
-    finally:
-        bd.desconectar()  # Una sola desconexión al final
+    

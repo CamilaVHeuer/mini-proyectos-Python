@@ -5,6 +5,7 @@
 
 import os
 from dotenv import load_dotenv
+from productos.database import obtener_conexion_base_datos
 
 # Cargar variables de entorno
 load_dotenv()
@@ -30,6 +31,15 @@ else:
     )
     MODO_TEXTO = "Diccionario (en memoria)"
 
+#Creacion de la instancia de la base de datos si es necesario
+if MODO_ALMACENAMIENTO == 'bd':
+    bd_conexion = obtener_conexion_base_datos(modo_prueba=False)
+    if bd_conexion:
+        print("✅ Conexión a la base de datos establecida correctamente.")
+    else:
+        print("❌ No se pudo establecer la conexión a la base de datos. Saliendo del programa.")
+        exit(1)
+
 def mostrar_menu():
     """Menú principal - modo determinado por variable de entorno"""
     while True:
@@ -50,27 +60,42 @@ def mostrar_menu():
         match opcion:
             case "1":
                 while True:
-                    estado, _ = intentar_agregar_producto()
+                    if MODO_ALMACENAMIENTO == 'bd':
+                        estado, _ = intentar_agregar_producto(bd_conexion)
+                    else:
+                        estado, _ = intentar_agregar_producto()
                     if estado in ["ok", "cancelado"]:
                         break
-                
+            
             case "2":
-                mostrar_productos()
-                
+                if MODO_ALMACENAMIENTO == 'bd':
+                    mostrar_productos(bd_conexion)
+                else:
+                    mostrar_productos()
+
             case "3":
                 while True:
-                    estado, _ = intentar_actualizar_producto()
+                    if MODO_ALMACENAMIENTO == 'bd':
+                        estado, _ = intentar_actualizar_producto(bd_conexion)
+                    else:
+                        estado, _ = intentar_actualizar_producto()
                     if estado in ["ok", "cancelado", "no_encontrado"]:
                         break
-                        
+            
             case "4":
                 while True:
-                    estado, _ = intentar_eliminar_producto()
+                    if MODO_ALMACENAMIENTO == 'bd':
+                        estado, _ = intentar_eliminar_producto(bd_conexion)
+                    else:
+                        estado, _ = intentar_eliminar_producto()
                     if estado in ["ok", "cancelado", "no_encontrado"]:
                         break
-                        
+            
             case "5":
                 print("Saliendo del programa...\n")
+                if MODO_ALMACENAMIENTO == 'bd' and bd_conexion:
+                    bd_conexion.desconectar()
+                    print("🔒 Conexión a la base de datos cerrada.")
                 break
 
 def main():

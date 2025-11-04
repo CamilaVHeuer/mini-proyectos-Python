@@ -1,7 +1,7 @@
 # Funciones para agregar, mostrar, actualizar y eliminar productos del inventario usando diccionario
 from productos.validaciones import validar_nombre, validar_tipo, validar_precio, validar_stock
 
-productos = {}  # Diccionario para almacenar los productos
+productos = {}  # Diccionario para almacenar los productos (variable global)
 
 def intentar_agregar_producto():
     nombre_producto = input('Ingrese el nombre del producto que desea agregar (o "cancelar" para volver al menú): ')
