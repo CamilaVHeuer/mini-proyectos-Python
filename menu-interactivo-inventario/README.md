@@ -272,7 +272,34 @@ El proyecto usa **almacenamiento dual** con una arquitectura modular clara:
 - **`database.py`** - Gestión de conexiones y estructura de tablas
 - **`menu_inventario.py`** - Selección automática de backend según configuración
 
+**Patrón de conexión única:**
+
+- En el backend MySQL, la conexión a la base de datos se crea una sola vez al inicio del programa o test, y se pasa como argumento a todas las funciones de operaciones.
+- Esto permite mayor eficiencia y control, evitando abrir/cerrar conexiones repetidamente.
+- Las funciones de operaciones en BD ahora reciben la conexión como primer argumento, por ejemplo:
+  ```python
+  resultado, nombre = agregar_bd(conexion)
+  ```
+- En el backend de diccionario, las funciones no requieren argumentos de conexión y operan directamente sobre la estructura en memoria.
+
 **Sistema de Estados:** Las funciones retornan tuplas descriptivas como `('ok', producto)`, `('cancelado', None)`, `('duplicado', producto)`, etc.
+
+## 🧪 Testing
+
+La suite de tests está adaptada al nuevo patrón de conexión:
+
+- En los tests de backend BD e integración, la conexión se crea en el método `setUp` y se cierra en `tearDown`.
+- Todas las funciones de operaciones BD reciben la conexión como argumento en los tests.
+- Ejemplo:
+  ```python
+  def setUp(self):
+      self.bd_conexion = obtener_conexion_base_datos(modo_prueba=True)
+  def tearDown(self):
+      self.bd_conexion.desconectar()
+  def test_agregar(self):
+      resultado, nombre = agregar_bd(self.bd_conexion)
+  ```
+- Los tests de diccionario siguen funcionando sin argumentos adicionales.
 
 ## 👥 Autor
 
