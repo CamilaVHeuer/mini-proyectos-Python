@@ -227,7 +227,7 @@ python -m unittest discover tests -v
 - ✅ Validación de precios numéricos
 - ✅ Validación de stock entero
 - ✅ Casos edge y entradas inválidas
-- ✅ **27 tests** de funciones puras sin efectos secundarios
+- ✅ **46 tests** de funciones puras sin efectos secundarios
 
 #### Tests de Backend Diccionario (`test_operaciones_diccionario.py`)
 

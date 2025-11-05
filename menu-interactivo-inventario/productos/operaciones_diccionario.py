@@ -4,49 +4,68 @@ from productos.validaciones import validar_nombre, validar_tipo, validar_precio,
 productos = {}  # Diccionario para almacenar los productos (variable global)
 
 def intentar_agregar_producto():
-    nombre_producto = input('Ingrese el nombre del producto que desea agregar (o "cancelar" para volver al menú): ')
-    nombre = validar_nombre(nombre_producto)
-    if nombre == "cancelado":
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)  #volver al menú principal
-    if nombre == "vacio":
-        print("No se ingresó ningún producto, por favor intente nuevamente.\n")
-        return ('vacio', None)  # Salgo de la función sin agregar nada
-    if nombre == "invalido":
-        print("El producto debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
-        return ('invalido', None)  # Salgo de la función sin agregar nada
-    if nombre in productos:
-        print("El producto ya está en la lista.\n")
-        return ('duplicado', nombre)  # Salgo de la función sin agregar nada
+    """
+    Función interactiva para agregar un producto al inventario en memoria.
+    Valida cada campo por separado y solo repite el input del campo inválido.
     
-    tipo_producto = input('Ingrese el tipo de producto (fruta/verdura) (o "cancelar" para volver al menú): ')
-    tipo = validar_tipo(tipo_producto)
-    if tipo == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)  #volver al menú principal
-    if tipo == 'invalido':
-        print("El tipo de producto debe ser 'fruta' o 'verdura'.\n")
-        return ('invalido', None)  # Salgo de la función sin agregar nada
-    
-    precio_producto = input('Ingrese el precio del producto (o "cancelar" para volver al menú): ')
-    precio = validar_precio(precio_producto)
-    if precio == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)  #volver al menú principal
-    if precio == 'invalido':
-        print("El precio debe ser un número positivo.\n")
-        return ('invalido', None)  # Salgo de la función sin agregar nada   
-    
-    stock_producto = input('Ingrese el stock del producto (o "cancelar" para volver al menú): ')
-    stock = validar_stock(stock_producto)
-    if stock == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)  #volver al menú principal
-    if stock == 'invalido':
-        print("El stock debe ser un número entero no negativo.\n")
-        return ('invalido', None)  # Salgo de la función sin agregar nada   
-    
-    # Si la entrada es válida, la agrego al diccionario
+    Returns:
+        tuple: (resultado, nombre) donde resultado puede ser:
+               'ok', 'cancelado', 'vacio', 'invalido', 'duplicado'
+    """
+    # Nombre
+    while True:
+        nombre_producto = input('Ingrese el nombre del producto que desea agregar (o "cancelar" para volver al menú): ')
+        nombre = validar_nombre(nombre_producto)
+        if nombre == "cancelado":
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if nombre == "vacio":
+            print("No se ingresó ningún producto, por favor intente nuevamente.\n")
+            continue
+        if nombre == "invalido":
+            print("El producto debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
+            continue
+        if nombre in productos:
+            print("El producto ya está en la lista.\n")
+            return ('duplicado', nombre)
+        break
+
+    # Tipo
+    while True:
+        tipo_producto = input('Ingrese el tipo de producto (fruta/verdura) (o "cancelar" para volver al menú): ')
+        tipo = validar_tipo(tipo_producto)
+        if tipo == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if tipo == 'invalido':
+            print("El tipo de producto debe ser 'fruta' o 'verdura'.\n")
+            continue
+        break
+
+    # Precio
+    while True:
+        precio_producto = input('Ingrese el precio del producto (o "cancelar" para volver al menú): ')
+        precio = validar_precio(precio_producto)
+        if precio == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if precio == 'invalido':
+            print("El precio debe ser un número positivo.\n")
+            continue
+        break
+
+    # Stock
+    while True:
+        stock_producto = input('Ingrese el stock del producto (o "cancelar" para volver al menú): ')
+        stock = validar_stock(stock_producto)
+        if stock == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if stock == 'invalido':
+            print("El stock debe ser un número entero no negativo.\n")
+            continue
+        break
+
     productos[nombre] = {"tipo": tipo, "precio": precio, "stock": stock}
     print(f"✅ Producto '{nombre}' agregado exitosamente.")
     return ('ok', nombre)  # Indico que se agregó el producto con éxito
@@ -62,48 +81,60 @@ def mostrar_productos():
         print("No hay productos en la lista.\n")
 
 def intentar_actualizar_producto():
-    nombre_producto = input('Ingrese el nombre del producto que desea actualizar (o "cancelar" para volver al menú): ')
-    nombre = validar_nombre(nombre_producto)
-    if nombre == "cancelado":
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)  #volver al menú principal
-    if nombre == "vacio":
-        print("No se ingresó ningún producto, por favor intente nuevamente.\n")
-        return ('vacio', None)  # Salgo de la función sin eliminar nada
-    if nombre not in productos:
-        print("El producto no se encuentra en la lista.\n")
-        return ('no_encontrado', None)  # Salgo de la función sin eliminar nada
+    """
+    Función interactiva para actualizar el precio o stock de un producto en memoria.
+    Valida cada campo por separado y solo repite el input del campo inválido.
+    
+    Returns:
+        tuple: (resultado, nombre) donde resultado puede ser:
+               'ok', 'cancelado', 'vacio', 'no_encontrado', 'invalido'
+    """
+    # Nombre
+    while True:
+        nombre_producto = input('Ingrese el nombre del producto que desea actualizar (o "cancelar" para volver al menú): ')
+        nombre = validar_nombre(nombre_producto)
+        if nombre == "cancelado":
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if nombre == "vacio":
+            print("No se ingresó ningún producto, por favor intente nuevamente.\n")
+            continue
+        if nombre not in productos:
+            print("El producto no se encuentra en la lista.\n")
+            return ('no_encontrado', None)
+        break
 
-    print("¿Qué desea actualizar?")
-    print("1. Precio")
-    print("2. Stock")
-    opcion = input("Seleccione una opción: ")
-
-    match opcion:
-        case "1":
-            nuevo_precio = input("Ingrese el nuevo precio: ")
-            precio = validar_precio(nuevo_precio)
-            if precio == 'invalido':
-                print("El precio debe ser un número positivo.\n")
-                return ('invalido', None)  # Salgo de la función sin actualizar nada
-            
+    # Elegir opcion a actualizar
+    while True:
+        print("¿Qué desea actualizar?")
+        print("1. Precio")
+        print("2. Stock")
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            while True:
+                nuevo_precio = input("Ingrese el nuevo precio: ")
+                precio = validar_precio(nuevo_precio)
+                if precio == 'invalido':
+                    print("El precio debe ser un número positivo.\n")
+                    continue
+                break
             productos[nombre]["precio"] = precio
             print(f"✅ Precio del producto '{nombre}' actualizado a {precio}.")
-            return ('ok', nombre)  # Indico que se actualizó el producto con éxito
-        
-        case "2":
-            nuevo_stock = input("Ingrese el nuevo stock: ")
-            stock = validar_stock(nuevo_stock)
-            if stock == 'invalido':
-                print("El stock debe ser un número entero no negativo.\n")
-                return ('invalido', None)  # Salgo de la función sin actualizar nada
+            return ('ok', nombre)
+        elif opcion == "2":
+            while True:
+                nuevo_stock = input("Ingrese el nuevo stock: ")
+                stock = validar_stock(nuevo_stock)
+                if stock == 'invalido':
+                    print("El stock debe ser un número entero no negativo.\n")
+                    continue
+                break
             productos[nombre]["stock"] = stock
             print(f"✅ Stock del producto '{nombre}' actualizado a {stock}.")
-            return ('ok', nombre)  # Indico que se actualizó el producto con éxito
-        
-        case _:
-            print("Opción inválida. No se realizó ninguna actualización.")
-            return ('invalido', None)  # Salgo de la función sin actualizar nada
+            return ('ok', nombre)
+        else:
+            print("Opción inválida. Por favor seleccione 1 o 2.")
+            
 
 def intentar_eliminar_producto():
     if not productos:

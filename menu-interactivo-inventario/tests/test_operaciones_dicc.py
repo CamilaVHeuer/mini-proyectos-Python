@@ -95,11 +95,11 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
-    @patch('builtins.input', return_value='')
+    @patch('builtins.input', side_effect=['', 'cancelar'])
     def test_05_intentar_agregar_producto_nombre_vacio(self, mock_input):
         """Test para entrada vacía al agregar producto"""
         estado, producto = intentar_agregar_producto()
-        self.assertEqual(estado, 'vacio')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
@@ -111,11 +111,11 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
-    @patch('builtins.input', side_effect=['pera', 'cereal'])
+    @patch('builtins.input', side_effect=['pera', 'cereal', 'cancelar'])
     def test_07_intentar_agregar_producto_tipo_invalido(self, mock_input):
         """Test para tipo de producto inválido"""
         estado, producto = intentar_agregar_producto()
-        self.assertEqual(estado, 'invalido')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
@@ -127,27 +127,19 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
-    @patch('builtins.input', side_effect=['pera', 'fruta', '-10'])
+    @patch('builtins.input', side_effect=['pera', 'fruta', '-10', 'cancelar'])
     def test_09_intentar_agregar_producto_precio_invalido(self, mock_input):
         """Test para precio inválido"""
-        estado, producto = intentar_agregar_producto()
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-        self.assertEqual(len(productos), 0)
-    
-    @patch('builtins.input', side_effect=['pera', 'fruta', '50', 'cancelar'])
-    def test_10_intentar_agregar_producto_cancelar_stock(self, mock_input):
-        """Test para cancelar al ingresar el stock del producto"""
         estado, producto = intentar_agregar_producto()
         self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
     
-    @patch('builtins.input', side_effect=['pera', 'fruta', '50', '-5'])
+    @patch('builtins.input', side_effect=['pera', 'fruta', '50', '-5', 'cancelar'])
     def test_11_intentar_agregar_producto_stock_invalido(self, mock_input):
         """Test para stock inválido"""
         estado, producto = intentar_agregar_producto()
-        self.assertEqual(estado, 'invalido')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
         self.assertEqual(len(productos), 0)
 
@@ -213,12 +205,12 @@ class TestOperacionesDiccionario(unittest.TestCase):
         # Verificar que el producto no se modificó
         self.assertEqual(productos['manzana']['precio'], 100.0)
     
-    @patch('builtins.input', return_value='')
+    @patch('builtins.input', side_effect=['', 'cancelar'])
     def test_17_intentar_actualizar_producto_nombre_vacio(self, mock_input):
         """Test para entrada vacía al actualizar producto"""
         productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
         estado, producto = intentar_actualizar_producto()
-        self.assertEqual(estado, 'vacio')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
     
     @patch('builtins.input', return_value='banana')
@@ -229,33 +221,33 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertEqual(estado, 'no_encontrado')
         self.assertIsNone(producto)
     
-    @patch('builtins.input', side_effect=['manzana', '1', '-50'])
+    @patch('builtins.input', side_effect=['manzana', '1', '-50', '150'])
     def test_19_intentar_actualizar_producto_precio_invalido(self, mock_input):
-        """Test para actualizar con precio inválido"""
+        """Test para actualizar con precio inválido y luego valor válido"""
         productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
         estado, producto = intentar_actualizar_producto()
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-        # Verificar que no se modificó el precio original
-        self.assertEqual(productos['manzana']['precio'], 100.0)
-    
-    @patch('builtins.input', side_effect=['manzana', '2', '-10'])
+        self.assertEqual(estado, 'ok')
+        self.assertIsNotNone(producto)
+        self.assertEqual(productos['manzana']['precio'], 150.0)
+
+    @patch('builtins.input', side_effect=['manzana', '2', '-10', '60'])
     def test_20_intentar_actualizar_producto_stock_invalido(self, mock_input):
-        """Test para actualizar con stock inválido"""
+        """Test para actualizar con stock inválido y luego valor válido"""
         productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
         estado, producto = intentar_actualizar_producto()
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-        # Verificar que no se modificó el stock original
-        self.assertEqual(productos['manzana']['stock'], 50)
-    
-    @patch('builtins.input', side_effect=['manzana', '3'])
+        self.assertEqual(estado, 'ok')
+        self.assertIsNotNone(producto)
+        self.assertEqual(productos['manzana']['stock'], 60)
+
+    @patch('builtins.input', side_effect=['manzana', '3', '0', '1', '200'])
     def test_21_intentar_actualizar_producto_opcion_invalida(self, mock_input):
-        """Test para opción de actualización inválida"""
+        """Test para opción de actualización inválida y luego válida"""
         productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
         estado, producto = intentar_actualizar_producto()
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
+        self.assertEqual(estado, 'ok')
+        self.assertEqual(producto, 'manzana')
+        self.assertEqual(productos['manzana']['precio'], 200.0)
+        self.assertEqual(productos['manzana']['stock'], 50)  # Stock sin cambios
 
     # Tests para intentar_eliminar_producto
     @patch('builtins.input', side_effect=['manzana', 's'])
@@ -287,7 +279,7 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertIsNone(producto)
         self.assertIn('manzana', productos)
     
-    @patch('builtins.input', return_value='')
+    @patch('builtins.input', side_effect=['', 'cancelar'])
     def test_25_intentar_eliminar_producto_nombre_vacio(self, mock_input):
         """Test para entrada vacía al eliminar producto"""
         productos['manzana'] = {'tipo': 'fruta', 'precio': 100.0, 'stock': 50}
@@ -312,4 +304,4 @@ class TestOperacionesDiccionario(unittest.TestCase):
         self.assertIsNone(producto)
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()
