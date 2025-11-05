@@ -172,118 +172,142 @@ def eliminar_producto_bd(nombre, bd_conexion):
 
 def intentar_agregar_producto(bd_conexion):
     """
-    Función interactiva para agregar un producto con validaciones usando BD
+    Función interactiva para agregar un producto con validaciones usando BD.
+    Valida cada campo por separado y solo repite el input del campo inválido.
     
     Args:
-         bd_conexion (DatabaseConnection): Conexión ya establecida
-        
+        bd_conexion (DatabaseConnection): Conexión ya establecida
+    
     Returns:
         tuple: (resultado, nombre) donde resultado puede ser:
                'ok', 'cancelado', 'vacio', 'invalido', 'duplicado'
     """
-    nombre_producto = input('Ingrese el nombre del producto que desea agregar (o "cancelar" para volver al menú): ')
-    nombre = validar_nombre(nombre_producto)
-    if nombre == "cancelado":
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)
-    if nombre == "vacio":
-        print("No se ingresó ningún producto, por favor intente nuevamente.\n")
-        return ('vacio', None)
-    if nombre == "invalido":
-        print("El producto debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
-        return ('invalido', None)
-    
-    tipo_producto = input('Ingrese el tipo de producto (fruta/verdura) (o "cancelar" para volver al menú): ')
-    tipo = validar_tipo(tipo_producto)
-    if tipo == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)
-    if tipo == 'invalido':
-        print("El tipo de producto debe ser 'fruta' o 'verdura'.\n")
-        return ('invalido', None)
-    
-    precio_producto = input('Ingrese el precio del producto (o "cancelar" para volver al menú): ')
-    precio = validar_precio(precio_producto)
-    if precio == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)
-    if precio == 'invalido':
-        print("El precio debe ser un número positivo.\n")
-        return ('invalido', None)
-    
-    stock_producto = input('Ingrese el stock del producto (o "cancelar" para volver al menú): ')
-    stock = validar_stock(stock_producto)
-    if stock == 'cancelado':
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)
-    if stock == 'invalido':
-        print("El stock debe ser un número entero no negativo.\n")
-        return ('invalido', None)
-    
+    # Nombre
+    while True:
+        nombre_producto = input('Ingrese el nombre del producto que desea agregar (o "cancelar" para volver al menú): ')
+        nombre = validar_nombre(nombre_producto)
+        if nombre == "cancelado":
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if nombre == "vacio":
+            print("No se ingresó ningún producto, por favor intente nuevamente.\n")
+            continue
+        if nombre == "invalido":
+            print("El producto debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
+            continue
+        break
+
+    # Tipo
+    while True:
+        tipo_producto = input('Ingrese el tipo de producto (fruta/verdura) (o "cancelar" para volver al menú): ')
+        tipo = validar_tipo(tipo_producto)
+        if tipo == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if tipo == 'invalido':
+            print("El tipo de producto debe ser 'fruta' o 'verdura'.\n")
+            continue
+        break
+
+    # Precio
+    while True:
+        precio_producto = input('Ingrese el precio del producto (o "cancelar" para volver al menú): ')
+        precio = validar_precio(precio_producto)
+        if precio == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if precio == 'invalido':
+            print("El precio debe ser un número positivo.\n")
+            continue
+        break
+
+    # Stock
+    while True:
+        stock_producto = input('Ingrese el stock del producto (o "cancelar" para volver al menú): ')
+        stock = validar_stock(stock_producto)
+        if stock == 'cancelado':
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if stock == 'invalido':
+            print("El stock debe ser un número entero no negativo.\n")
+            continue
+        break
+
     # Intentar agregar a la base de datos
     exito = agregar_producto_bd(nombre, tipo, precio, stock, bd_conexion)
     if exito:
         return ('ok', nombre)
     else:
-        # Si falló por producto duplicado, lo detectamos aquí
         return ('duplicado', nombre)
 
 
 def intentar_actualizar_producto(bd_conexion):
     """
-    Función interactiva para actualizar un producto usando BD
+    Función interactiva para actualizar un producto usando BD.
+    Valida cada campo por separado y solo repite el input del campo inválido.
     
     Args:
         bd_conexion (DatabaseConnection): Conexión ya establecida
-
+    
     Returns:
         tuple: (resultado, nombre) donde resultado puede ser:
                'ok', 'cancelado', 'vacio', 'invalido', 'no_encontrado'
     """
-    nombre_producto = input('Ingrese el nombre del producto que desea actualizar (o "cancelar" para volver al menú): ')
-    nombre = validar_nombre(nombre_producto)
-    if nombre == "cancelado":
-        print("Operación cancelada. Volviendo al menú principal.\n")
-        return ('cancelado', None)
-    if nombre == "vacio":
-        print("No se ingresó ningún producto, por favor intente nuevamente.\n")
-        return ('vacio', None)
+    # Nombre
+    while True:
+        nombre_producto = input('Ingrese el nombre del producto que desea actualizar (o "cancelar" para volver al menú): ')
+        nombre = validar_nombre(nombre_producto)
+        if nombre == "cancelado":
+            print("Operación cancelada. Volviendo al menú principal.\n")
+            return ('cancelado', None)
+        if nombre == "vacio":
+            print("No se ingresó ningún producto, por favor intente nuevamente.\n")
+            continue
+        if nombre == "invalido":
+            print("El producto debe contener solo letras y espacios, sin números ni caracteres especiales.\n")
+            continue
+        break
 
-    print("¿Qué desea actualizar?")
-    print("1. Precio")
-    print("2. Stock")
-    opcion = input("Seleccione una opción: ")
+    # Selección de campo a actualizar
+    while True:
+        print("¿Qué desea actualizar?")
+        print("1. Precio")
+        print("2. Stock")
+        opcion = input("Seleccione una opción: ")
+        if opcion not in ["1", "2"]:
+            print("Opción inválida. Debe elegir 1 o 2.\n")
+            continue
+        break
 
-    match opcion:
-        case "1":
+    # Actualización de precio
+    if opcion == "1":
+        while True:
             nuevo_precio = input("Ingrese el nuevo precio: ")
             precio = validar_precio(nuevo_precio)
             if precio == 'invalido':
                 print("El precio debe ser un número positivo.\n")
-                return ('invalido', None)
+                continue
+            break
+        exito = actualizar_producto_bd(nombre, 'precio', precio, bd_conexion)
+        if exito:
+            return ('ok', nombre)
+        else:
+            return ('no_encontrado', nombre)
 
-            exito = actualizar_producto_bd(nombre, 'precio', precio, bd_conexion)
-            if exito:
-                return ('ok', nombre)
-            else:
-                return ('no_encontrado', nombre)
-        
-        case "2":
+    # Actualización de stock
+    if opcion == "2":
+        while True:
             nuevo_stock = input("Ingrese el nuevo stock: ")
             stock = validar_stock(nuevo_stock)
             if stock == 'invalido':
                 print("El stock debe ser un número entero no negativo.\n")
-                return ('invalido', None)
-
-            exito = actualizar_producto_bd(nombre, 'stock', stock, bd_conexion)
-            if exito:
-                return ('ok', nombre)
-            else:
-                return ('no_encontrado', nombre)
-        
-        case _:
-            print("Opción inválida. No se realizó ninguna actualización.")
-            return ('invalido', None)
+                continue
+            break
+        exito = actualizar_producto_bd(nombre, 'stock', stock, bd_conexion)
+        if exito:
+            return ('ok', nombre)
+        else:
+            return ('no_encontrado', nombre)
 
 
 def intentar_eliminar_producto(bd_conexion):
@@ -334,4 +358,4 @@ def intentar_eliminar_producto(bd_conexion):
     except Exception as e:
         print(f"❌ Error inesperado: {e}")
         return ('no_encontrado', None)
-    
+

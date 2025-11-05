@@ -159,11 +159,11 @@ class TestOperacionesBD(unittest.TestCase):
         self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
     
-    @patch('builtins.input', return_value='')
+    @patch('builtins.input', side_effect=['', 'cancelar'])
     def test_14_intentar_agregar_producto_vacio(self, mock_input):
-        """Test: Entrada vacía al agregar producto interactivo"""
+        """Test: Entrada vacía al agregar producto interactivo, luego cancelar"""
         estado, producto = intentar_agregar_producto(self.bd_conexion)
-        self.assertEqual(estado, 'vacio')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
     
     @patch('builtins.input', side_effect=['manzana', 'fruta', '1.50', '100'])
@@ -198,13 +198,13 @@ class TestOperacionesBD(unittest.TestCase):
         self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
     
-    @patch('builtins.input', return_value='')
+    @patch('builtins.input', side_effect=['', 'cancelar'])
     def test_19_intentar_actualizar_producto_nombre_vacio(self, mock_input):
-        """Test: Entrada vacía al actualizar producto"""
+        """Test: Entrada vacía al actualizar producto, luego cancelar"""
         estado, producto = intentar_actualizar_producto(self.bd_conexion)
-        self.assertEqual(estado, 'vacio')
+        self.assertEqual(estado, 'cancelado')
         self.assertIsNone(producto)
-    
+
     @patch('builtins.input', side_effect=['producto inexistente', '1', '5.00'])
     def test_20_intentar_actualizar_producto_no_encontrado(self, mock_input):
         """Test: Actualizar producto que no existe"""
@@ -213,30 +213,31 @@ class TestOperacionesBD(unittest.TestCase):
         self.assertEqual(estado, 'no_encontrado')
         self.assertEqual(producto, 'producto inexistente')
     
-    @patch('builtins.input', side_effect=['pera', '1', '-10'])
+    @patch('builtins.input', side_effect=['pera', '1', '-10', '5'])
     def test_21_intentar_actualizar_producto_precio_invalido(self, mock_input):
-        """Test: Actualizar con precio inválido"""
+        """Test: Actualizar con precio inválido y luego colocar precio válido"""
+        # Asegura que el producto exista exactamente como se usará en el input
         agregar_producto_bd("pera", "fruta", 1.80, 40, self.bd_conexion)
         estado, producto = intentar_actualizar_producto(self.bd_conexion)
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-    
-    @patch('builtins.input', side_effect=['banana', '2', '-5'])
+        self.assertEqual(estado, 'ok')
+        self.assertEqual(producto, 'pera')
+
+    @patch('builtins.input', side_effect=['banana', '2', '-5', '6'])
     def test_22_intentar_actualizar_producto_stock_invalido(self, mock_input):
-        """Test: Actualizar con stock inválido"""
+        """Test: Actualizar con stock inválido y luego colocar stock válido"""
         agregar_producto_bd("banana", "fruta", 0.80, 50, self.bd_conexion)
         estado, producto = intentar_actualizar_producto(self.bd_conexion)
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-    
-    @patch('builtins.input', side_effect=['naranja', '3'])
+        self.assertEqual(estado, 'ok')
+        self.assertEqual(producto, 'banana')
+
+    @patch('builtins.input', side_effect=['naranja', '3', '3', '1','15'])
     def test_23_intentar_actualizar_producto_opcion_invalida(self, mock_input):
-        """Test: Opción de actualización inválida"""
+        """Test: Opción de actualización inválida, varios intentos y luego colocar valida"""
         agregar_producto_bd("naranja", "fruta", 1.00, 50, self.bd_conexion)
         estado, producto = intentar_actualizar_producto(self.bd_conexion)
-        self.assertEqual(estado, 'invalido')
-        self.assertIsNone(producto)
-    
+        self.assertEqual(estado, 'ok')
+        self.assertEqual(producto, 'naranja')
+
     @patch('builtins.input', side_effect=['apio', 's'])
     def test_24_intentar_eliminar_producto_exitoso(self, mock_input):
         """Test: Eliminar producto interactivo exitoso"""

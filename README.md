@@ -26,7 +26,7 @@ Un sistema completo de inventario con **almacenamiento dual** (memoria + MySQL) 
 
 - � **Almacenamiento dual** - Backend de memoria (temporal) + MySQL (persistente)
 - �🏗️ **Arquitectura modular** - Separación clara entre backends y responsabilidades
-- 🧪 **50+ tests** - Suite completa: validaciones, diccionario, BD e integración
+- 🧪 **90+ tests** - Suite completa: validaciones, diccionario, BD e integración
 - 🔄 **Validaciones avanzadas** - Regex para caracteres españoles, manejo de errores
 - ⚙️ **Configuración flexible** - Variables de entorno (.env) para múltiples modos
 - 🤖 **GitHub Actions** - CI/CD con tests automáticos por backend
