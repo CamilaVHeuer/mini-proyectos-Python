@@ -1,6 +1,6 @@
 # 🐍 Mini Proyectos Python - Portfolio de Ingeniería y Desarrollo
 
-Un repositorio que combina **ingeniería técnica** con **desarrollo de software**, mostrando soluciones prácticas a problemas reales mediante Python, bases de datos y testing comprehensivo.
+Un repositorio completo que combina **ingeniería técnica** con **desarrollo de software**, mostrando soluciones prácticas a problemas reales mediante Python, bases de datos y testing comprehensivo.
 
 ## 👩‍💻 Sobre este Portfolio
 
